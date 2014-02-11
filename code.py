@@ -23,10 +23,11 @@ class upload:
       return json.dumps({"status": "Wrong parameters"})
     try:
       json.loads(data.encrypted)
+      if 'thumb' in data:
+        json.loads(data.thumb)
     except ValueError:
       web.header("Content-Type", "application/json")
       return json.dumps({"status": "This is not JSON"})
-    r_server = redis.Redis(redis_server)
     salt = r_server.get('salt')
     if salt is None:
       salt = zbase62.b2a(M2Crypto.m2.rand_bytes(25))
@@ -45,6 +46,10 @@ class upload:
     f = open(upload_dir + '/' + fileid,'w')
     f.write(data.encrypted)
     f.close()
+    if 'thumb' in data:
+      f = open(upload_dir + '/thumb/' + fileid,'w')
+      f.write(data.thumb)
+      f.close()
     r_server.set('file:' + fileid, hashed)
     r_server.incr('ip:' + hashedip)
     r_server.expire('ip:' + hashedip,86400)
@@ -58,13 +63,16 @@ class remove:
     if not all(x in data for x in ('id', 'password')):
       web.header("Content-Type", "application/json")
       return json.dumps({"status": "Wrong parameters"})
-    r_server = redis.Redis(redis_server)
     if not r_server.get('file:' + data.id):
       web.header("Content-Type", "application/json")
       return json.dumps({"status": "No such file"})    
     hashed = r_server.get('file:' + data.id)
     if bcrypt.hashpw(data.password, hashed) == hashed:
       os.remove(upload_dir + '/' + data.id)
+      try:
+        os.remove(upload_dir + '/thumb/' + data.id)
+      except:
+        pass
       r_server.delete('file:' + data.id)
       web.header("Content-Type", "application/json")
       return json.dumps({"status": "Success"})
