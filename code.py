@@ -4,6 +4,7 @@ import web, json, string, random, M2Crypto, os, redis, bcrypt, hashlib, sha3, cg
 from zbase62 import zbase62
 cgi.maxlen = 5 * 1024 * 1024
 redis_server = 'localhost'
+r_server = redis.Redis(redis_server)
 upload_dir = '/home/img.bi/img.bi-files'
 urls = (
   '/api/upload', 'upload',
