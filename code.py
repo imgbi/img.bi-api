@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 import web, json, string, random, M2Crypto, os, redis, bcrypt, hashlib, sha3, cgi
 from zbase62 import zbase62
+from datetime import datetime, timedelta
 cgi.maxlen = 5 * 1024 * 1024
 redis_server = 'localhost'
 r_server = redis.Redis(redis_server)
@@ -51,6 +52,13 @@ class upload:
       f = open(upload_dir + '/thumb/' + fileid,'w')
       f.write(data.thumb)
       f.close()
+    if 'expire' in data and int(data.expire) != 0:
+      print data.expire
+      try:
+        delta = timedelta(days=int(data.expire))
+      except:
+        return json.dumps({"status": "Wrong expire date"})
+      r_server.set('file:expire:' + fileid, (datetime.now() + delta).strftime('%Y-%m-%d %H:%M:%S'))
     r_server.set('file:' + fileid, hashed)
     r_server.incr('ip:' + hashedip)
     r_server.expire('ip:' + hashedip,86400)
