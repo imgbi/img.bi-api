@@ -53,7 +53,6 @@ class upload:
       f.write(data.thumb)
       f.close()
     if 'expire' in data and int(data.expire) != 0:
-      print data.expire
       try:
         delta = timedelta(days=int(data.expire))
       except:
@@ -90,5 +89,6 @@ class remove:
       return json.dumps({"status": "Wrong password"})
 
 if __name__ == "__main__":
+  web.wsgi.runwsgi = lambda func, addr=None: web.wsgi.runfcgi(func, addr)
   app = web.application(urls, globals())
   app.run()
