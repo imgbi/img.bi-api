@@ -75,7 +75,7 @@ class remove:
       web.header("Content-Type", "application/json")
       return json.dumps({"status": "No such file"})    
     hashed = r_server.get('file:' + data.id)
-    if bcrypt.hashpw(data.password, hashed) == hashed:
+    if bcrypt.hashpw(data.password.encode('utf-8'), hashed) == hashed:
       os.remove(upload_dir + '/' + data.id)
       try:
         os.remove(upload_dir + '/thumb/' + data.id)
