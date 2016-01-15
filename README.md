@@ -1,3 +1,7 @@
+# DEPRECATED
+
+This repo contains old version of img.bi backend. It's no longer required, new nodejs backend of img.bi available from [main repo](https://github.com/imgbi/img.bi).
+
 # img.bi
 [img.bi](https://img.bi/) is a secure image hosting. Images are encrypted using AES-256 with random key in browser before upload.
 
